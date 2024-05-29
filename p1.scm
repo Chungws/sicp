@@ -19,13 +19,13 @@
   (define (area x)
     (sqrt (- 1 (* x x))))
   (* 4 (integral area num-steps 0 1)))
-; (approx-pi 1000000) ; -> 3.141594652413842
+(approx-pi 1000000) ; -> 3.141594652413842
 
 ; Problem 3
 (define (rectangle func x1 x2)
   (* (func x1) (- x2 x1)))
 (define (trapezoid func x1 x2)
-  (+ (rectangle func x1 x2) (/ (* (- x2 x1) (abs (- (func x2) (func x1)))) 2)))
+  (+ (rectangle func x1 x2) (/ (* (- x2 x1) (- (func x2) (func x1))) 2)))
 (define (integral-with piece func num-steps x1 x2)
   (let ([delta (if (= x2 x1) 0.0 (* 1.0 (/ (- x2 x1) num-steps)))])
     (if (< num-steps 0)
@@ -42,7 +42,7 @@
   (define (area x)
     (sqrt (- 1 (* x x))))
   (* 4 (integral-with trapezoid area num-steps 0 1)))
-; (better-pi 1000000) ; -> 3.1415966524137087
+(better-pi 1000000) ; -> 3.1415926524137543
 
 (define (deriv-constant wrt constant)
   0)
