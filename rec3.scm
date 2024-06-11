@@ -55,19 +55,20 @@ bar2 ; -> #0=(1 2 3 . #0#) (Cycle)
 
 ; Coming or going?
 (define (reverse! lst)
-  (if (or (null? lst) (null? (cdr lst)))
+  (if (or (null? lst) (null? (cdr lst))) ; -> case for length zero or one
       lst
-      (let ((tmp (reverse! (cdr lst))))
-        (display (list tmp lst))
-        (newline)
-        (set-cdr! (last-ptr tmp) lst)
-        (display (list tmp lst))
-        (newline)
-        (set-cdr! lst '())
-        (display (list tmp lst))
-        (newline)
-        tmp
-        )))
+      (let ([tmp (reverse! (cdr lst))])
+        ;(display (list tmp lst))
+        ;(newline)
+        (set-cdr!
+         (last-ptr tmp)
+         lst) ; -> assign tmp last elem's next pointer to lst's first elem
+        ;(display (list tmp lst))
+        ;(newline)
+        (set-cdr! lst '()) ; -> assign lst first elem's next pointer to null
+        ;(display (list tmp lst))
+        ;(newline)
+        tmp)))
 (define foo3 (list 1 2 3 4))
 (define bar3 (reverse! foo3))
 foo3
@@ -179,14 +180,22 @@ bar3
 (c 1) ; -> 8
 
 ; Bonus
+; Compare one step increment and two step increment. If they are same? It is loop.
 (define (loops? lst)
-  (if (or (null? lst) (null? (cdr lst)))
+  (define (helper near far)
+    (cond
+      [(eq? near far) #t] ; -> case for same
+      [(or (null? far) (null? (cdr far))) #f] ; -> case for end of list
+      [else (helper (cdr near) (cddr far))])) ; -> case for next step
+  (if (or (null? lst) (null? (cdr lst))) ; -> case for length zero or one
       #f
-      
-      #t))
-(define safe (list 1 2 3))
-(define uhoh (list 1 2 3))
-(begin (append! uhoh uhoh) 'trap-set)
+      (helper lst (cddr lst))))
+
+(define safe (list 1 2 3 4 5 6 7 8))
+(define uhoh (list 1 2 3 4 5 6 7 8))
+(begin
+  (append! uhoh uhoh)
+  'trap-set)
 
 (loops? safe) ; -> #f
 (loops? uhoh) ; -> #t
