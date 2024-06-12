@@ -113,6 +113,8 @@ reason why the result is 1
 (define (memoize f)
   (let ([table (make-table)])
     (lambda (x)
+      ; (display (list table x (table-has-key? table x)))
+      ; (newline)
       (if (table-has-key? table x)
           (table-get table x)
           (let ([val (f x)])
@@ -127,11 +129,39 @@ reason why the result is 1
 "Problem 5 (optional)"
 
 ;; advise
+(define (advise func before after)
+  (lambda (x)
+    (begin
+      (if (not (null? before)) (before))
+      (let ([val (func x)])
+        (if (not (null? after)) (after))
+        val))))
+
+#|
+(define (add-1 x)
+  (+ x 1))
+(define advised-add-1
+  (advise add-1
+          (lambda () (displayln "calling add-1"))
+          (lambda () (displayln "add-1 done"))))
+(advised-add-1 5)
+|#
 
 "Problem 6 (optional)"
 
 ;; make-monitored-with-advice
+(define (make-monitored-with-advice f)
+  (let ([count 0])
+    (lambda (x)
+      (define helper (advise f '() (lambda () (set! count (+ count 1)))))
+      (let ([result (helper x)])
+        (display "Num calls: ")
+        (displayln count)
+        result))))
 
+(set! fib (make-monitored-with-advice fib))
+(fib 10)
+ 
 
 ;; Allow this file to be included from elsewhere, and export all defined
 ;; functions from it.
